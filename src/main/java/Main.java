@@ -1,3 +1,7 @@
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.*;
+
 /**
  * Created by Igor Khristiuk
  * Date: 17.08.2021
@@ -6,23 +10,25 @@
 
 public class Main {
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException, ExecutionException {
+        final int COUNT_OF_THREADS = 4;
 
-        ThreadGroup mainGroup = new ThreadGroup("mainGroup");
-        LiveThread liveThread = new LiveThread();
+        final ExecutorService threadPool = Executors.newFixedThreadPool(4);
 
-        final Thread thread1 = new Thread(mainGroup, liveThread, "Лунтик");
-        final Thread thread2 = new Thread(mainGroup, liveThread, "Швунтик");
-        final Thread thread3 = new Thread(mainGroup, liveThread, "Нунтик");
-        final Thread thread4 = new Thread(mainGroup, liveThread, "Фунтик");
+        final List<Callable<Integer>> callableList = new ArrayList<>();
+        for (int i = 0; i < COUNT_OF_THREADS; i++) {
+            callableList.add(new LiveThread());
+        }
 
-        thread1.start();
-        thread2.start();
-        thread3.start();
-        thread4.start();
+        final List<Future<Integer>> task = threadPool.invokeAll(callableList);
+        for (int i = 0; i < task.size(); i++) {
+            Future<Integer> res = task.get(i);
+            System.out.println("Поток " + (i + 1) + " напечатал " + res.get() + " сообщения");
+        }
 
-        Thread.sleep(15000);
-        mainGroup.interrupt();
+        final int result = threadPool.invokeAny(callableList);
+        System.out.println("Самая быстрая задача напечатала " + result + " сообщений");
+        threadPool.shutdown();
 
     }
 }
