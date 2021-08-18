@@ -11,18 +11,18 @@ public class Main {
         ThreadGroup mainGroup = new ThreadGroup("mainGroup");
         LiveThread liveThread = new LiveThread();
 
-        final Thread thread1 = new Thread(mainGroup, liveThread, "Лунтик");
-        final Thread thread2 = new Thread(mainGroup, liveThread, "Швунтик");
-        final Thread thread3 = new Thread(mainGroup, liveThread, "Нунтик");
-        final Thread thread4 = new Thread(mainGroup, liveThread, "Фунтик");
+        Thread[] threads = new Thread[]{
+                new Thread(mainGroup, liveThread, "Лунтик"),
+                new Thread(mainGroup, liveThread, "Швунтик"),
+                new Thread(mainGroup, liveThread, "Нунтик"),
+                new Thread(mainGroup, liveThread, "Фунтик")
+        };
 
-        thread1.start();
-        thread2.start();
-        thread3.start();
-        thread4.start();
+        for (Thread thread : threads) {
+            thread.start();
+        }
 
         Thread.sleep(15000);
         mainGroup.interrupt();
-
     }
 }
